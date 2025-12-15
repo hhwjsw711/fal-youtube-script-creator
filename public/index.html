@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Script Generator | fal</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-tertiary: #1a1a1a;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.15);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --accent: #e7083e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr 350px;
+      grid-template-rows: 56px 1fr;
+      height: 100vh;
+    }
+
+    /* Header */
+    header {
+      grid-column: 1 / -1;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo svg {
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+    }
+
+    .logo-text {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+    }
+
+    .status-badge.idle { background: var(--bg-tertiary); color: var(--text-muted); }
+    .status-badge.running { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .status-badge.waiting { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .status-badge.completed { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+    /* Sidebar - Agents */
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .agent-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .agent-card.active {
+      border-color: var(--accent);
+      background: rgba(231, 8, 62, 0.05);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .agent-emoji {
+      font-size: 20px;
+    }
+
+    .agent-info {
+      flex: 1;
+    }
+
+    .agent-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .agent-role {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .agent-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.3s;
+    }
+
+    .agent-status.thinking {
+      background: #fbbf24;
+      box-shadow: 0 0 10px #fbbf24;
+      animation: pulse 1s infinite;
+    }
+
+    .agent-card.thinking {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    .agent-thinking-text {
+      font-size: 10px;
+      color: #fbbf24;
+      margin-top: 6px;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .agent-card.thinking .agent-thinking-text {
+      display: block;
+    }
+
+    .agent-card.thinking .agent-status {
+      background: #fbbf24;
+      box-shadow: 0 0 10px #fbbf24;
+      animation: pulse 1s infinite;
+    }
+
+    /* Thinking indicator in chat */
+    .thinking-bubble {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .thinking-bubble .thinking-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .thinking-bubble .thinking-content {
+      flex: 1;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .thinking-bubble .thinking-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .thinking-bubble .thinking-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .thinking-bubble .thinking-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .thinking-bubble .thinking-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .thinking-bubble .thinking-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fbbf24;
+      animation: thinkingDot 1.4s infinite ease-in-out both;
+    }
+
+    .thinking-bubble .thinking-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .thinking-bubble .thinking-dots span:nth-child(2) { animation-delay: -0.16s; }
+    .thinking-bubble .thinking-dots span:nth-child(3) { animation-delay: 0s; }
+
+    .thinking-bubble .thinking-context {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    @keyframes thinkingDot {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .phase-indicator.hidden {
+      display: none;
+    }
+
+    .phase-indicator .phase-icon {
+      font-size: 14px;
+    }
+
+    .phase-indicator .phase-text {
+      font-weight: 500;
+    }
+
+    .phase-indicator .phase-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--border-color);
+      border-top-color: #fbbf24;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Main Content - Conversation */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    /* Topic Input Area */
+    .topic-input-area {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+    }
+
+    .topic-input-area.hidden {
+      display: none;
+    }
+
+    .topic-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .topic-input-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .topic-input {
+      flex: 1;
+      padding: 14px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 15px;
+    }
+
+    .topic-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .topic-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Conversation Feed */
+    .conversation-feed {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .message-sender {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .message-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .message-badge.question { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .message-badge.task { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .message-badge.result { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .message-badge.feedback { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+
+    .message-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message-text strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .message-text br {
+      display: block;
+      margin: 4px 0;
+    }
+
+    /* Numbered lists in messages */
+    .message-text {
+      counter-reset: none;
+    }
+
+    /* User Input Area */
+    .user-input-area {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+    }
+
+    .user-input-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .user-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      resize: none;
+    }
+
+    .user-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .user-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Right Panel - Script */
+    .script-panel {
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .script-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .script-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .script-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .script-section {
+      margin-bottom: 20px;
+    }
+
+    .script-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .script-section-content {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+    }
+
+    .script-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .script-empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    /* API Key Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-color);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Final Script Display */
+    .final-script {
+      background: var(--bg-tertiary);
+      border: 2px solid #22c55e;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .final-script-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .final-script-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .final-script-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .final-script-content {
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    /* Audio Player */
+    .audio-player-container {
+      background: var(--bg-tertiary);
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .audio-player-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .audio-player-header svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .audio-player {
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .audio-player::-webkit-media-controls-panel {
+      background: var(--bg-secondary);
+    }
+
+    .audio-download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .audio-download-btn:hover {
+      background: #059669;
+    }
+
+    .audio-info {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .audio-info span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Multiple audio chunks */
+    .audio-chunks {
+      margin-top: 16px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+
+    .audio-chunks-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .audio-chunk {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .audio-chunk-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      min-width: 60px;
+    }
+
+    .audio-chunk audio {
+      flex: 1;
+      height: 32px;
+    }
+
+    /* Question Messages */
+    .message.question-highlight {
+      background: rgba(251, 191, 36, 0.05);
+      border-left: 3px solid #fbbf24;
+      padding-left: 12px;
+      margin-left: -15px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Question Options */
+    .question-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .question-option {
+      padding: 10px 18px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .question-option:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+      background: rgba(231, 8, 62, 0.1);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    /* Example Topics */
+    .example-topics {
+      margin-top: 16px;
+    }
+
+    .example-topics-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .example-topic {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 4px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .example-topic:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- API Key Modal -->
+  <div id="apiKeyModal" class="modal-overlay">
+    <div class="modal">
+      <h2 class="modal-title">Fal API Key</h2>
+      <p class="modal-desc">Agent sistemini kullanmak için Fal API anahtarınızı girin.</p>
+      <input type="password" id="apiKeyInput" class="modal-input" placeholder="fal_...">
+      <button class="btn btn-primary" style="width: 100%;" onclick="saveApiKey()">
+        Devam Et
+      </button>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <img src="/fal-logo.svg" alt="fal" style="height: 24px;">
+        <span class="logo-text" style="color: var(--text-muted); margin: 0 8px;">|</span>
+        <span class="logo-text">YouTube Script Generator</span>
+      </div>
+      <div class="header-status">
+        <span id="statusBadge" class="status-badge idle">Idle</span>
+        <button class="btn btn-secondary btn-small" onclick="resetProject()">Reset</button>
+      </div>
+    </header>
+
+    <!-- Sidebar - Agents -->
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Agent Team</h3>
+      <div id="agentList"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topic Input -->
+      <div id="topicInputArea" class="topic-input-area">
+        <label class="topic-label">Video Konusu</label>
+        <div class="topic-input-row">
+          <input type="text" id="topicInput" class="topic-input" placeholder="Örn: Kleopatra'nın hayatı, Yapay zeka tarihi, Bitcoin nasıl çalışır...">
+          <button id="startBtn" class="btn btn-primary" onclick="startProject()">
+            Başlat
+          </button>
+        </div>
+        <div class="example-topics">
+          <span class="example-topics-title">Örnek konular:</span>
+          <span class="example-topic" onclick="setTopic('Kleopatra\'nın hayatı ve Mısır\'ın son kraliçesi olarak mirası')">Kleopatra</span>
+          <span class="example-topic" onclick="setTopic('Bitcoin ve blockchain teknolojisi nasıl çalışır?')">Bitcoin</span>
+          <span class="example-topic" onclick="setTopic('Yapay zeka tarihi ve geleceği')">Yapay Zeka</span>
+          <span class="example-topic" onclick="setTopic('İkinci Dünya Savaşı\'nın en kritik anları')">2. Dünya Savaşı</span>
+          <span class="example-topic" onclick="setTopic('Elon Musk\'ın girişimcilik hikayesi')">Elon Musk</span>
+        </div>
+      </div>
+
+      <!-- Conversation Feed -->
+      <div id="conversationFeed" class="conversation-feed"></div>
+
+      <!-- User Input -->
+      <div class="user-input-area">
+        <div class="user-input-row">
+          <input type="text" id="userInput" class="user-input" placeholder="Mesajınızı yazın..." disabled onkeypress="handleKeyPress(event)">
+          <button id="sendBtn" class="btn btn-primary" onclick="sendResponse()" disabled>
+            Gönder
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Script Panel -->
+    <aside class="script-panel">
+      <div class="script-header">
+        <span class="script-title">📝 Script</span>
+        <button class="btn btn-secondary btn-small" onclick="copyScript()">Kopyala</button>
+      </div>
+      <div id="scriptContent" class="script-content">
+        <div class="script-empty">
+          <div class="script-empty-icon">📄</div>
+          <p>Script burada görünecek</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // State
+    let apiKey = localStorage.getItem('falApiKey') || '';
+    let sessionId = 'session_' + Date.now();
+    let isRunning = false;
+    let waitingForUser = false;
+    let eventSource = null;
+
+    // Agent profiles (will be loaded from server)
+    let agents = {};
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!apiKey) {
+        document.getElementById('apiKeyModal').classList.remove('hidden');
+      } else {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        await loadAgents();
+      }
+    });
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (key) {
+        apiKey = key;
+        localStorage.setItem('falApiKey', apiKey);
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        loadAgents();
+      }
+    }
+
+    async function loadAgents() {
+      try {
+        const res = await fetch('/api/agents');
+        agents = await res.json();
+        renderAgentList();
+      } catch (err) {
+        console.error('Failed to load agents:', err);
+      }
+    }
+
+    function renderAgentList() {
+      const container = document.getElementById('agentList');
+      container.innerHTML = Object.values(agents).map(agent => `
+        <div class="agent-card" id="agent-${agent.id}">
+          <div class="agent-header">
+            <span class="agent-emoji">${agent.emoji}</span>
+            <div class="agent-info">
+              <div class="agent-name" style="color: ${agent.color}">${agent.name}</div>
+              <div class="agent-role">${agent.role}</div>
+            </div>
+            <div class="agent-status" id="status-${agent.id}"></div>
+          </div>
+          <div class="agent-thinking-text" id="thinking-text-${agent.id}">Düşünüyor...</div>
+        </div>
+      `).join('');
+    }
+
+    function setTopic(topic) {
+      document.getElementById('topicInput').value = topic;
+    }
+
+    async function startProject() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) return;
+
+      isRunning = true;
+      updateStatus('running', 'Çalışıyor');
+
+      // Hide topic input
+      document.getElementById('topicInputArea').classList.add('hidden');
+
+      // Enable user input
+      document.getElementById('userInput').disabled = false;
+      document.getElementById('sendBtn').disabled = false;
+
+      // Clear previous messages
+      document.getElementById('conversationFeed').innerHTML = '';
+
+      // Setup SSE first and wait for connection
+      setupSSE();
+
+      try {
+        const res = await fetch('/api/project/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic,
+            sessionId,
+            apiKey
+          })
+        });
+
+        const data = await res.json();
+        console.log('API Response:', data);
+
+        if (data.error) throw new Error(data.error);
+
+        // Render initial messages (addMessage handles duplicates)
+        data.messages.forEach(msg => addMessage(msg));
+
+        // Update script
+        updateScript(data.script);
+
+        // Check if waiting for user
+        if (data.waitingForUser) {
+          waitingForUser = true;
+          updateStatus('waiting', 'Cevap Bekliyor');
+        }
+
+      } catch (err) {
+        console.error('Start error:', err);
+        addSystemMessage(`Hata: ${err.message}`);
+        updateStatus('idle', 'Hata');
+      }
+    }
+
+    // Track which agents are currently thinking
+    const thinkingAgents = new Map();
+
+    function setupSSE() {
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      eventSource = new EventSource(`/api/events/${sessionId}`);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'message') {
+          // Remove thinking bubble for this agent when message arrives
+          if (data.data.from && thinkingAgents.has(data.data.from)) {
+            removeThinkingBubble(data.data.from);
+          }
+
+          addMessage(data.data);
+
+          // Check if it's a question
+          if (data.data.type === 'question' && data.data.to === 'user') {
+            waitingForUser = true;
+            updateStatus('waiting', 'Cevap Bekliyor');
+          }
+        } else if (data.type === 'script') {
+          updateScript(data.data);
+        } else if (data.type === 'thinking') {
+          handleThinkingEvent(data.data);
+        } else if (data.type === 'phase') {
+          handlePhaseEvent(data.data);
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('SSE error:', err);
+      };
+    }
+
+    function handleThinkingEvent(data) {
+      const { agentId, isThinking, context } = data;
+      const agent = agents[agentId];
+      if (!agent) return;
+
+      console.log(`[Thinking] ${agent.name}: ${isThinking ? 'started' : 'stopped'}`, context);
+
+      const card = document.getElementById(`agent-${agentId}`);
+      const thinkingText = document.getElementById(`thinking-text-${agentId}`);
+
+      if (isThinking) {
+        // Update agent card
+        if (card) card.classList.add('thinking');
+        if (thinkingText) {
+          thinkingText.textContent = context ? `${context}...` : 'Düşünüyor...';
+        }
+
+        // Add thinking bubble to chat
+        addThinkingBubble(agentId, agent, context);
+        thinkingAgents.set(agentId, true);
+      } else {
+        // Remove thinking state
+        if (card) card.classList.remove('thinking');
+        removeThinkingBubble(agentId);
+        thinkingAgents.delete(agentId);
+      }
+    }
+
+    function addThinkingBubble(agentId, agent, context) {
+      // Remove existing bubble first
+      removeThinkingBubble(agentId);
+
+      const feed = document.getElementById('conversationFeed');
+      if (!feed) return;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'thinking-bubble';
+      bubble.id = `thinking-bubble-${agentId}`;
+      bubble.innerHTML = `
+        <div class="thinking-avatar" style="background: ${agent.color}20; color: ${agent.color}">
+          ${agent.emoji}
+        </div>
+        <div class="thinking-content">
+          <div class="thinking-header">
+            <span class="thinking-name" style="color: ${agent.color}">${agent.name}</span>
+            <span class="thinking-badge">Düşünüyor</span>
+          </div>
+          <div class="thinking-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          ${context ? `<div class="thinking-context">${escapeHtml(context)}</div>` : ''}
+        </div>
+      `;
+
+      feed.appendChild(bubble);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function removeThinkingBubble(agentId) {
+      const bubble = document.getElementById(`thinking-bubble-${agentId}`);
+      if (bubble) {
+        bubble.remove();
+      }
+    }
+
+    function handlePhaseEvent(data) {
+      const { phase, description } = data;
+      console.log(`[Phase] ${phase}: ${description}`);
+
+      // Update status badge
+      const phaseLabels = {
+        'clarification': 'Bilgi Toplama',
+        'research': 'Araştırma',
+        'writing': 'Yazım',
+        'review': 'İnceleme',
+        'revision': 'Düzeltme',
+        'completed': 'Tamamlandı'
+      };
+
+      const label = phaseLabels[phase] || phase;
+      updateStatus('running', label);
+    }
+
+    // Track rendered message IDs to prevent duplicates
+    const renderedMessageIds = new Set();
+
+    function addMessage(msg) {
+      // Skip if already rendered
+      if (msg.id && renderedMessageIds.has(msg.id)) {
+        console.log('Skipping duplicate message:', msg.id);
+        return;
+      }
+      if (msg.id) {
+        renderedMessageIds.add(msg.id);
+      }
+
+      const feed = document.getElementById('conversationFeed');
+      if (!feed) {
+        console.error('Conversation feed not found!');
+        return;
+      }
+
+      console.log('Adding message:', msg.fromName, msg.type, msg.content?.substring(0, 50));
+
+      // Check if it's a final script
+      if (msg.finalScript) {
+        const finalDiv = document.createElement('div');
+        finalDiv.className = 'final-script';
+        finalDiv.innerHTML = `
+          <div class="final-script-header">🎬 FINAL SCRIPT HAZIR!</div>
+          <div class="final-script-title">${escapeHtml(msg.finalScript.title)}</div>
+          <div class="final-script-meta">
+            ${escapeHtml(msg.finalScript.duration_estimate || '')}
+            ${msg.finalScript.wordCount ? ` • ${msg.finalScript.wordCount} kelime` : ''}
+          </div>
+          <div class="final-script-content">${escapeHtml(msg.finalScript.script)}</div>
+        `;
+        feed.appendChild(finalDiv);
+        updateStatus('completed', 'Tamamlandı');
+        isRunning = false;
+        feed.scrollTop = feed.scrollHeight;
+        return;
+      }
+
+      // Check if it's an audio file
+      if (msg.audioFile) {
+        const audioDiv = document.createElement('div');
+        audioDiv.className = 'audio-player-container';
+
+        const durationText = msg.audioFile.duration
+          ? `${Math.floor(msg.audioFile.duration / 60)}:${String(Math.floor(msg.audioFile.duration % 60)).padStart(2, '0')}`
+          : '';
+
+        audioDiv.innerHTML = `
+          <div class="audio-player-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/>
+              <circle cx="18" cy="16" r="3"/>
+            </svg>
+            <span>Seslendirme Hazır!</span>
+          </div>
+          <audio class="audio-player" controls>
+            <source src="${msg.audioFile.url}" type="${msg.audioFile.contentType || 'audio/mpeg'}">
+            Tarayıcınız audio elementini desteklemiyor.
+          </audio>
+          <div class="audio-info">
+            ${durationText ? `<span>⏱️ ${durationText}</span>` : ''}
+            <span>📁 MP3</span>
+          </div>
+          <a href="${msg.audioFile.url}" download="voiceover.mp3" class="audio-download-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            İndir
+          </a>
+        `;
+        feed.appendChild(audioDiv);
+        feed.scrollTop = feed.scrollHeight;
+        return;
+      }
+
+      // Ensure content exists
+      const content = msg.content || '';
+      if (!content && !msg.options) {
+        console.log('Empty message, skipping');
+        return;
+      }
+
+      const badgeHtml = msg.type && msg.type !== 'info'
+        ? `<span class="message-badge ${msg.type}">${msg.type}</span>`
+        : '';
+
+      const optionsHtml = msg.options && msg.options.length > 0
+        ? `<div class="question-options">${msg.options.map(opt =>
+            `<button class="question-option" onclick="selectOption('${escapeHtml(opt).replace(/'/g, "\\'")}')">${escapeHtml(opt)}</button>`
+          ).join('')}</div>`
+        : '';
+
+      const time = msg.timestamp
+        ? new Date(msg.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        : '';
+
+      const fromColor = msg.fromColor || '#6b7280';
+      const fromEmoji = msg.fromEmoji || '💬';
+      const fromName = msg.fromName || msg.from || 'System';
+
+      // Create message element
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+      messageDiv.innerHTML = `
+        <div class="message-avatar" style="background: ${fromColor}20; color: ${fromColor}">
+          ${fromEmoji}
+        </div>
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-sender" style="color: ${fromColor}">${escapeHtml(fromName)}</span>
+            ${msg.to && msg.to !== 'all' ? `<span style="color: var(--text-muted)">→ ${escapeHtml(msg.to)}</span>` : ''}
+            <span class="message-time">${time}</span>
+            ${badgeHtml}
+          </div>
+          <div class="message-text">${formatMessage(content)}</div>
+          ${optionsHtml}
+        </div>
+      `;
+
+      feed.appendChild(messageDiv);
+      feed.scrollTop = feed.scrollHeight;
+
+      // Update agent status
+      if (msg.from && agents[msg.from]) {
+        setAgentActive(msg.from);
+      }
+
+      // If this is a question for the user, highlight it
+      if (msg.type === 'question' && msg.to === 'user') {
+        messageDiv.classList.add('question-highlight');
+
+        // Also focus on user input
+        setTimeout(() => {
+          const userInput = document.getElementById('userInput');
+          if (userInput && !userInput.disabled) {
+            userInput.focus();
+          }
+        }, 500);
+      }
+    }
+
+    function addSystemMessage(text) {
+      addMessage({
+        from: 'system',
+        fromName: 'Sistem',
+        fromEmoji: '⚙️',
+        fromColor: '#6b7280',
+        to: 'all',
+        content: text,
+        type: 'info',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    function formatMessage(text) {
+      if (!text) return '';
+
+      // Escape HTML first
+      let formatted = escapeHtml(text);
+
+      // Bold
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      // Line breaks
+      formatted = formatted.replace(/\n/g, '<br>');
+
+      // @mentions
+      formatted = formatted.replace(/@(\w+)/g, '<span style="color: var(--accent)">@$1</span>');
+
+      // Tags like [HOOK], [GÖRSEL], etc.
+      formatted = formatted.replace(/\[([A-ZÜĞŞÇİÖ\s]+)\]/g, '<span style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">[$1]</span>');
+
+      return formatted;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function selectOption(option) {
+      document.getElementById('userInput').value = option;
+      sendResponse();
+    }
+
+    async function sendResponse() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (!message) return;
+
+      // Clear input
+      input.value = '';
+
+      // Add user message to feed
+      addMessage({
+        from: 'user',
+        fromName: 'Kullanıcı',
+        fromEmoji: '👤',
+        fromColor: '#ffffff',
+        to: 'orchestrator',
+        content: message,
+        type: 'info',
+        timestamp: new Date().toISOString()
+      });
+
+      // Disable input while processing
+      input.disabled = true;
+      document.getElementById('sendBtn').disabled = true;
+      updateStatus('running', 'İşleniyor');
+
+      try {
+        const res = await fetch('/api/project/respond', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            sessionId,
+            apiKey
+          })
+        });
+
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        // Update script
+        updateScript(data.script);
+
+        // Update status
+        if (data.waitingForUser) {
+          waitingForUser = true;
+          updateStatus('waiting', 'Cevap Bekliyor');
+        } else if (data.isRunning) {
+          updateStatus('running', 'Çalışıyor');
+        } else {
+          updateStatus('completed', 'Tamamlandı');
+        }
+
+      } catch (err) {
+        console.error('Response error:', err);
+        addSystemMessage(`Hata: ${err.message}`);
+      } finally {
+        input.disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        input.focus();
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendResponse();
+      }
+    }
+
+    function updateScript(script) {
+      const container = document.getElementById('scriptContent');
+
+      if (!script || Object.keys(script).length === 0) {
+        container.innerHTML = `
+          <div class="script-empty">
+            <div class="script-empty-icon">📄</div>
+            <p>Script burada görünecek</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = Object.entries(script).map(([section, content]) => `
+        <div class="script-section">
+          <div class="script-section-title">${section}</div>
+          <div class="script-section-content">${escapeHtml(content)}</div>
+        </div>
+      `).join('');
+    }
+
+    function updateStatus(status, text) {
+      const badge = document.getElementById('statusBadge');
+      badge.className = `status-badge ${status}`;
+      badge.textContent = text;
+    }
+
+    function setAgentActive(agentId) {
+      // Reset all active states (but keep thinking states)
+      document.querySelectorAll('.agent-card').forEach(card => {
+        card.classList.remove('active');
+      });
+
+      // Set active
+      const card = document.getElementById(`agent-${agentId}`);
+      if (card) {
+        card.classList.add('active');
+        // Remove active after delay, but keep thinking if still thinking
+        setTimeout(() => {
+          if (card && !thinkingAgents.has(agentId)) {
+            card.classList.remove('active');
+          }
+        }, 2000);
+      }
+    }
+
+    function copyScript() {
+      const script = document.getElementById('scriptContent').innerText;
+      navigator.clipboard.writeText(script).then(() => {
+        alert('Script kopyalandı!');
+      });
+    }
+
+    async function resetProject() {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+
+      try {
+        await fetch('/api/project/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId })
+        });
+      } catch (err) {
+        console.error('Reset error:', err);
+      }
+
+      // Reset UI
+      sessionId = 'session_' + Date.now();
+      isRunning = false;
+      waitingForUser = false;
+
+      // Clear rendered message tracking
+      renderedMessageIds.clear();
+      thinkingAgents.clear();
+
+      document.getElementById('topicInputArea').classList.remove('hidden');
+      document.getElementById('conversationFeed').innerHTML = '';
+      document.getElementById('userInput').disabled = true;
+      document.getElementById('sendBtn').disabled = true;
+      document.getElementById('topicInput').value = '';
+
+      updateScript({});
+      updateStatus('idle', 'Bekliyor');
+    }
+  </script>
+</body>
+</html>
