@@ -80,7 +80,6 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-radius: 4px;
     }
 
     .status-badge.idle { background: var(--bg-tertiary); color: var(--text-muted); }
@@ -108,7 +107,6 @@
     .agent-card {
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
       padding: 12px;
       margin-bottom: 12px;
       transition: all 0.2s;
@@ -130,8 +128,17 @@
       margin-bottom: 8px;
     }
 
-    .agent-emoji {
-      font-size: 20px;
+    .agent-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .agent-icon svg {
+      width: 20px;
+      height: 20px;
     }
 
     .agent-info {
@@ -151,7 +158,6 @@
     .agent-status {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
       background: var(--text-muted);
       transition: all 0.3s;
     }
@@ -196,19 +202,21 @@
     .thinking-bubble .thinking-avatar {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
       flex-shrink: 0;
+    }
+
+    .thinking-bubble .thinking-avatar svg {
+      width: 20px;
+      height: 20px;
     }
 
     .thinking-bubble .thinking-content {
       flex: 1;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
       padding: 12px 16px;
     }
 
@@ -227,7 +235,6 @@
     .thinking-bubble .thinking-badge {
       font-size: 9px;
       padding: 2px 6px;
-      border-radius: 4px;
       background: rgba(251, 191, 36, 0.2);
       color: #fbbf24;
       text-transform: uppercase;
@@ -243,7 +250,6 @@
     .thinking-bubble .thinking-dots span {
       width: 6px;
       height: 6px;
-      border-radius: 50%;
       background: #fbbf24;
       animation: thinkingDot 1.4s infinite ease-in-out both;
     }
@@ -293,7 +299,6 @@
       height: 12px;
       border: 2px solid var(--border-color);
       border-top-color: #fbbf24;
-      border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
 
@@ -345,7 +350,6 @@
       padding: 14px 16px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
       color: var(--text-primary);
       font-size: 15px;
     }
@@ -381,12 +385,15 @@
     .message-avatar {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
       flex-shrink: 0;
+    }
+
+    .message-avatar svg {
+      width: 20px;
+      height: 20px;
     }
 
     .message-content {
@@ -414,7 +421,6 @@
     .message-badge {
       font-size: 9px;
       padding: 2px 6px;
-      border-radius: 4px;
       text-transform: uppercase;
       font-weight: 600;
     }
@@ -464,7 +470,6 @@
       padding: 12px 16px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
       color: var(--text-primary);
       font-size: 14px;
       resize: none;
@@ -537,9 +542,13 @@
     }
 
     .script-empty-icon {
-      font-size: 48px;
       margin-bottom: 12px;
       opacity: 0.5;
+    }
+
+    .script-empty-icon svg {
+      width: 48px;
+      height: 48px;
     }
 
     /* Buttons */
@@ -548,7 +557,6 @@
       font-size: 13px;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       display: inline-flex;
@@ -605,7 +613,6 @@
     .modal {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
       padding: 24px;
       width: 100%;
       max-width: 400px;
@@ -628,7 +635,6 @@
       padding: 12px 16px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
       color: var(--text-primary);
       font-size: 14px;
       margin-bottom: 16px;
@@ -645,7 +651,6 @@
       height: 16px;
       border: 2px solid var(--border-color);
       border-top-color: currentColor;
-      border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
 
@@ -657,7 +662,6 @@
     .final-script {
       background: var(--bg-tertiary);
       border: 2px solid #22c55e;
-      border-radius: 12px;
       padding: 20px;
       margin: 16px 0;
     }
@@ -669,6 +673,11 @@
       margin-bottom: 12px;
       color: #22c55e;
       font-weight: 600;
+    }
+
+    .final-script-header svg {
+      width: 20px;
+      height: 20px;
     }
 
     .final-script-title {
@@ -695,7 +704,6 @@
     .audio-player-container {
       background: var(--bg-tertiary);
       border: 2px solid #10b981;
-      border-radius: 12px;
       padding: 20px;
       margin: 16px 0;
     }
@@ -717,7 +725,6 @@
     .audio-player {
       width: 100%;
       height: 48px;
-      border-radius: 8px;
       outline: none;
     }
 
@@ -734,7 +741,6 @@
       background: #10b981;
       color: white;
       border: none;
-      border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -760,6 +766,16 @@
       gap: 4px;
     }
 
+    .audio-info span svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .audio-download-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
     /* Multiple audio chunks */
     .audio-chunks {
       margin-top: 16px;
@@ -779,7 +795,6 @@
       gap: 12px;
       padding: 8px 12px;
       background: var(--bg-secondary);
-      border-radius: 6px;
       margin-bottom: 8px;
     }
 
@@ -800,7 +815,6 @@
       border-left: 3px solid #fbbf24;
       padding-left: 12px;
       margin-left: -15px;
-      border-radius: 0 8px 8px 0;
     }
 
     /* Question Options */
@@ -817,7 +831,6 @@
       padding: 10px 18px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
       font-size: 13px;
       color: var(--text-secondary);
       cursor: pointer;
@@ -841,7 +854,6 @@
 
     ::-webkit-scrollbar-thumb {
       background: var(--border-color);
-      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -865,7 +877,6 @@
       margin: 4px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
       font-size: 12px;
       color: var(--text-secondary);
       cursor: pointer;
@@ -883,10 +894,10 @@
   <div id="apiKeyModal" class="modal-overlay">
     <div class="modal">
       <h2 class="modal-title">Fal API Key</h2>
-      <p class="modal-desc">Agent sistemini kullanmak için Fal API anahtarınızı girin.</p>
+      <p class="modal-desc">Enter your Fal API key to use the agent system.</p>
       <input type="password" id="apiKeyInput" class="modal-input" placeholder="fal_...">
       <button class="btn btn-primary" style="width: 100%;" onclick="saveApiKey()">
-        Devam Et
+        Continue
       </button>
     </div>
   </div>
@@ -915,20 +926,20 @@
     <main class="main-content">
       <!-- Topic Input -->
       <div id="topicInputArea" class="topic-input-area">
-        <label class="topic-label">Video Konusu</label>
+        <label class="topic-label">Video Topic</label>
         <div class="topic-input-row">
-          <input type="text" id="topicInput" class="topic-input" placeholder="Örn: Kleopatra'nın hayatı, Yapay zeka tarihi, Bitcoin nasıl çalışır...">
+          <input type="text" id="topicInput" class="topic-input" placeholder="E.g.: Life of Cleopatra, History of AI, How Bitcoin works...">
           <button id="startBtn" class="btn btn-primary" onclick="startProject()">
-            Başlat
+            Start
           </button>
         </div>
         <div class="example-topics">
-          <span class="example-topics-title">Örnek konular:</span>
-          <span class="example-topic" onclick="setTopic('Kleopatra\'nın hayatı ve Mısır\'ın son kraliçesi olarak mirası')">Kleopatra</span>
-          <span class="example-topic" onclick="setTopic('Bitcoin ve blockchain teknolojisi nasıl çalışır?')">Bitcoin</span>
-          <span class="example-topic" onclick="setTopic('Yapay zeka tarihi ve geleceği')">Yapay Zeka</span>
-          <span class="example-topic" onclick="setTopic('İkinci Dünya Savaşı\'nın en kritik anları')">2. Dünya Savaşı</span>
-          <span class="example-topic" onclick="setTopic('Elon Musk\'ın girişimcilik hikayesi')">Elon Musk</span>
+          <span class="example-topics-title">Example topics:</span>
+          <span class="example-topic" onclick="setTopic('Life of Cleopatra and her legacy as Egypt\'s last queen')">Cleopatra</span>
+          <span class="example-topic" onclick="setTopic('How Bitcoin and blockchain technology works')">Bitcoin</span>
+          <span class="example-topic" onclick="setTopic('History and future of Artificial Intelligence')">AI</span>
+          <span class="example-topic" onclick="setTopic('Most critical moments of World War II')">WWII</span>
+          <span class="example-topic" onclick="setTopic('Elon Musk\'s entrepreneurship journey')">Elon Musk</span>
         </div>
       </div>
 
@@ -938,9 +949,9 @@
       <!-- User Input -->
       <div class="user-input-area">
         <div class="user-input-row">
-          <input type="text" id="userInput" class="user-input" placeholder="Mesajınızı yazın..." disabled onkeypress="handleKeyPress(event)">
+          <input type="text" id="userInput" class="user-input" placeholder="Type your message..." disabled onkeypress="handleKeyPress(event)">
           <button id="sendBtn" class="btn btn-primary" onclick="sendResponse()" disabled>
-            Gönder
+            Send
           </button>
         </div>
       </div>
@@ -949,13 +960,26 @@
     <!-- Script Panel -->
     <aside class="script-panel">
       <div class="script-header">
-        <span class="script-title">📝 Script</span>
-        <button class="btn btn-secondary btn-small" onclick="copyScript()">Kopyala</button>
+        <span class="script-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          Script
+        </span>
+        <button class="btn btn-secondary btn-small" onclick="copyScript()">Copy</button>
       </div>
       <div id="scriptContent" class="script-content">
         <div class="script-empty">
-          <div class="script-empty-icon">📄</div>
-          <p>Script burada görünecek</p>
+          <div class="script-empty-icon" style="opacity: 0.5;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+            </svg>
+          </div>
+          <p>Script will appear here</p>
         </div>
       </div>
     </aside>
@@ -971,6 +995,55 @@
 
     // Agent profiles (will be loaded from server)
     let agents = {};
+
+    // SVG Icons for agents and UI elements
+    const ICONS = {
+      // Agent icons
+      producer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+      researcher: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`,
+      writer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`,
+      editor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+      critic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6"/><path d="M12 9v6"/><circle cx="12" cy="12" r="10"/></svg>`,
+      creative: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 18v4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>`,
+      voiceover: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>`,
+
+      // UI icons
+      user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+      system: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+      script: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>`,
+      document: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`,
+      video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+      audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>`,
+      clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>`,
+      file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13,2 13,9 20,9"/></svg>`,
+      download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`
+    };
+
+    // Map agent IDs to icon keys
+    const AGENT_ICON_MAP = {
+      'producer': 'producer',
+      'researcher': 'researcher',
+      'writer': 'writer',
+      'editor': 'editor',
+      'critic': 'critic',
+      'creative': 'creative',
+      'voiceover': 'voiceover'
+    };
+
+    function getAgentIcon(agentId, color = 'currentColor') {
+      const iconKey = AGENT_ICON_MAP[agentId] || 'user';
+      const icon = ICONS[iconKey] || ICONS.user;
+      return icon.replace('currentColor', color);
+    }
+
+    function getMessageIcon(from, color = 'currentColor') {
+      if (from === 'user') return ICONS.user.replace('currentColor', color);
+      if (from === 'system') return ICONS.system.replace('currentColor', color);
+      // Check if it's an agent
+      if (AGENT_ICON_MAP[from]) return getAgentIcon(from, color);
+      return ICONS.user.replace('currentColor', color);
+    }
 
     // Initialize
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1007,14 +1080,14 @@
       container.innerHTML = Object.values(agents).map(agent => `
         <div class="agent-card" id="agent-${agent.id}">
           <div class="agent-header">
-            <span class="agent-emoji">${agent.emoji}</span>
+            <span class="agent-icon" style="color: ${agent.color}">${getAgentIcon(agent.id, agent.color)}</span>
             <div class="agent-info">
               <div class="agent-name" style="color: ${agent.color}">${agent.name}</div>
               <div class="agent-role">${agent.role}</div>
             </div>
             <div class="agent-status" id="status-${agent.id}"></div>
           </div>
-          <div class="agent-thinking-text" id="thinking-text-${agent.id}">Düşünüyor...</div>
+          <div class="agent-thinking-text" id="thinking-text-${agent.id}">Thinking...</div>
         </div>
       `).join('');
     }
@@ -1028,7 +1101,7 @@
       if (!topic) return;
 
       isRunning = true;
-      updateStatus('running', 'Çalışıyor');
+      updateStatus('running', 'Running');
 
       // Hide topic input
       document.getElementById('topicInputArea').classList.add('hidden');
@@ -1068,13 +1141,13 @@
         // Check if waiting for user
         if (data.waitingForUser) {
           waitingForUser = true;
-          updateStatus('waiting', 'Cevap Bekliyor');
+          updateStatus('waiting', 'Waiting for Response');
         }
 
       } catch (err) {
         console.error('Start error:', err);
-        addSystemMessage(`Hata: ${err.message}`);
-        updateStatus('idle', 'Hata');
+        addSystemMessage(`Error: ${err.message}`);
+        updateStatus('idle', 'Error');
       }
     }
 
@@ -1102,7 +1175,7 @@
           // Check if it's a question
           if (data.data.type === 'question' && data.data.to === 'user') {
             waitingForUser = true;
-            updateStatus('waiting', 'Cevap Bekliyor');
+            updateStatus('waiting', 'Waiting for Response');
           }
         } else if (data.type === 'script') {
           updateScript(data.data);
@@ -1132,7 +1205,7 @@
         // Update agent card
         if (card) card.classList.add('thinking');
         if (thinkingText) {
-          thinkingText.textContent = context ? `${context}...` : 'Düşünüyor...';
+          thinkingText.textContent = context ? `${context}...` : 'Thinking...';
         }
 
         // Add thinking bubble to chat
@@ -1158,12 +1231,12 @@
       bubble.id = `thinking-bubble-${agentId}`;
       bubble.innerHTML = `
         <div class="thinking-avatar" style="background: ${agent.color}20; color: ${agent.color}">
-          ${agent.emoji}
+          ${getAgentIcon(agentId, agent.color)}
         </div>
         <div class="thinking-content">
           <div class="thinking-header">
             <span class="thinking-name" style="color: ${agent.color}">${agent.name}</span>
-            <span class="thinking-badge">Düşünüyor</span>
+            <span class="thinking-badge">Thinking</span>
           </div>
           <div class="thinking-dots">
             <span></span>
@@ -1191,12 +1264,12 @@
 
       // Update status badge
       const phaseLabels = {
-        'clarification': 'Bilgi Toplama',
-        'research': 'Araştırma',
-        'writing': 'Yazım',
-        'review': 'İnceleme',
-        'revision': 'Düzeltme',
-        'completed': 'Tamamlandı'
+        'clarification': 'Clarification',
+        'research': 'Research',
+        'writing': 'Writing',
+        'review': 'Review',
+        'revision': 'Revision',
+        'completed': 'Completed'
       };
 
       const label = phaseLabels[phase] || phase;
@@ -1229,16 +1302,16 @@
         const finalDiv = document.createElement('div');
         finalDiv.className = 'final-script';
         finalDiv.innerHTML = `
-          <div class="final-script-header">🎬 FINAL SCRIPT HAZIR!</div>
+          <div class="final-script-header">${ICONS.video} FINAL SCRIPT READY!</div>
           <div class="final-script-title">${escapeHtml(msg.finalScript.title)}</div>
           <div class="final-script-meta">
             ${escapeHtml(msg.finalScript.duration_estimate || '')}
-            ${msg.finalScript.wordCount ? ` • ${msg.finalScript.wordCount} kelime` : ''}
+            ${msg.finalScript.wordCount ? ` • ${msg.finalScript.wordCount} words` : ''}
           </div>
           <div class="final-script-content">${escapeHtml(msg.finalScript.script)}</div>
         `;
         feed.appendChild(finalDiv);
-        updateStatus('completed', 'Tamamlandı');
+        updateStatus('completed', 'Completed');
         isRunning = false;
         feed.scrollTop = feed.scrollHeight;
         return;
@@ -1255,28 +1328,20 @@
 
         audioDiv.innerHTML = `
           <div class="audio-player-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18V5l12-2v13"/>
-              <circle cx="6" cy="18" r="3"/>
-              <circle cx="18" cy="16" r="3"/>
-            </svg>
-            <span>Seslendirme Hazır!</span>
+            ${ICONS.audio}
+            <span>Voiceover Ready!</span>
           </div>
           <audio class="audio-player" controls>
             <source src="${msg.audioFile.url}" type="${msg.audioFile.contentType || 'audio/mpeg'}">
-            Tarayıcınız audio elementini desteklemiyor.
+            Your browser does not support the audio element.
           </audio>
           <div class="audio-info">
-            ${durationText ? `<span>⏱️ ${durationText}</span>` : ''}
-            <span>📁 MP3</span>
+            ${durationText ? `<span>${ICONS.clock} ${durationText}</span>` : ''}
+            <span>${ICONS.file} MP3</span>
           </div>
           <a href="${msg.audioFile.url}" download="voiceover.mp3" class="audio-download-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            İndir
+            ${ICONS.download}
+            Download
           </a>
         `;
         feed.appendChild(audioDiv);
@@ -1302,19 +1367,19 @@
         : '';
 
       const time = msg.timestamp
-        ? new Date(msg.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        ? new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
         : '';
 
       const fromColor = msg.fromColor || '#6b7280';
-      const fromEmoji = msg.fromEmoji || '💬';
       const fromName = msg.fromName || msg.from || 'System';
+      const fromIcon = getMessageIcon(msg.from, fromColor);
 
       // Create message element
       const messageDiv = document.createElement('div');
       messageDiv.className = 'message';
       messageDiv.innerHTML = `
         <div class="message-avatar" style="background: ${fromColor}20; color: ${fromColor}">
-          ${fromEmoji}
+          ${fromIcon}
         </div>
         <div class="message-content">
           <div class="message-header">
@@ -1353,8 +1418,7 @@
     function addSystemMessage(text) {
       addMessage({
         from: 'system',
-        fromName: 'Sistem',
-        fromEmoji: '⚙️',
+        fromName: 'System',
         fromColor: '#6b7280',
         to: 'all',
         content: text,
@@ -1378,8 +1442,8 @@
       // @mentions
       formatted = formatted.replace(/@(\w+)/g, '<span style="color: var(--accent)">@$1</span>');
 
-      // Tags like [HOOK], [GÖRSEL], etc.
-      formatted = formatted.replace(/\[([A-ZÜĞŞÇİÖ\s]+)\]/g, '<span style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">[$1]</span>');
+      // Tags like [HOOK], [VISUAL], etc.
+      formatted = formatted.replace(/\[([A-Z\s]+)\]/g, '<span style="background: var(--bg-tertiary); padding: 2px 6px; font-size: 11px; font-weight: 600;">[$1]</span>');
 
       return formatted;
     }
@@ -1407,8 +1471,7 @@
       // Add user message to feed
       addMessage({
         from: 'user',
-        fromName: 'Kullanıcı',
-        fromEmoji: '👤',
+        fromName: 'User',
         fromColor: '#ffffff',
         to: 'orchestrator',
         content: message,
@@ -1419,7 +1482,7 @@
       // Disable input while processing
       input.disabled = true;
       document.getElementById('sendBtn').disabled = true;
-      updateStatus('running', 'İşleniyor');
+      updateStatus('running', 'Processing');
 
       try {
         const res = await fetch('/api/project/respond', {
@@ -1441,16 +1504,16 @@
         // Update status
         if (data.waitingForUser) {
           waitingForUser = true;
-          updateStatus('waiting', 'Cevap Bekliyor');
+          updateStatus('waiting', 'Waiting for Response');
         } else if (data.isRunning) {
-          updateStatus('running', 'Çalışıyor');
+          updateStatus('running', 'Running');
         } else {
-          updateStatus('completed', 'Tamamlandı');
+          updateStatus('completed', 'Completed');
         }
 
       } catch (err) {
         console.error('Response error:', err);
-        addSystemMessage(`Hata: ${err.message}`);
+        addSystemMessage(`Error: ${err.message}`);
       } finally {
         input.disabled = false;
         document.getElementById('sendBtn').disabled = false;
@@ -1470,8 +1533,10 @@
       if (!script || Object.keys(script).length === 0) {
         container.innerHTML = `
           <div class="script-empty">
-            <div class="script-empty-icon">📄</div>
-            <p>Script burada görünecek</p>
+            <div class="script-empty-icon" style="opacity: 0.5;">
+              ${ICONS.document}
+            </div>
+            <p>Script will appear here</p>
           </div>
         `;
         return;
@@ -1513,7 +1578,7 @@
     function copyScript() {
       const script = document.getElementById('scriptContent').innerText;
       navigator.clipboard.writeText(script).then(() => {
-        alert('Script kopyalandı!');
+        alert('Script copied!');
       });
     }
 
@@ -1549,7 +1614,7 @@
       document.getElementById('topicInput').value = '';
 
       updateScript({});
-      updateStatus('idle', 'Bekliyor');
+      updateStatus('idle', 'Idle');
     }
   </script>
 </body>
