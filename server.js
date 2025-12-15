@@ -17,6 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const AGENT_MODEL = process.env.AGENT_MODEL || 'openai/gpt-4.1';
 const SEARCH_MODEL = process.env.SEARCH_MODEL || 'openai/gpt-4.1';
+const FAL_KEY = process.env.FAL_KEY || '';
 
 // ============================================
 // SECURITY & VALIDATION UTILITIES
@@ -29,8 +30,8 @@ const SecurityUtils = {
   // Validate API key format (basic check)
   isValidApiKeyFormat(apiKey) {
     if (!apiKey || typeof apiKey !== 'string') return false;
-    // Must be at least 20 chars, alphanumeric with dashes/underscores
-    return apiKey.length >= 20 && /^[a-zA-Z0-9_-]+$/.test(apiKey);
+    // Must be at least 20 chars, alphanumeric with dashes/underscores/colons (fal.ai uses uuid:secret format)
+    return apiKey.length >= 20 && /^[a-zA-Z0-9_:-]+$/.test(apiKey);
   },
 
   // Sanitize user input - remove potential XSS/injection
@@ -1907,10 +1908,18 @@ app.get('/api/events/:sessionId', (req, res) => {
   });
 });
 
+// Check if server has API key configured
+app.get('/api/config', (req, res) => {
+  res.json({ hasServerApiKey: !!FAL_KEY });
+});
+
 app.post('/api/project/start', async (req, res) => {
   try {
-    const { topic, context, apiKey } = req.body;
+    const { topic, context } = req.body;
     let { sessionId } = req.body;
+
+    // Use API key from request body or fall back to server config
+    const apiKey = req.body.apiKey || FAL_KEY;
 
     // Validate API key
     if (!apiKey) {
@@ -1976,7 +1985,10 @@ app.post('/api/project/start', async (req, res) => {
 
 app.post('/api/project/respond', async (req, res) => {
   try {
-    const { message, sessionId, apiKey } = req.body;
+    const { message, sessionId } = req.body;
+
+    // Use API key from request body or fall back to server config
+    const apiKey = req.body.apiKey || FAL_KEY;
 
     // Validate API key
     if (!apiKey) {

@@ -913,6 +913,10 @@
       <div class="header-status">
         <span id="statusBadge" class="status-badge idle">Idle</span>
         <button class="btn btn-secondary btn-small" onclick="resetProject()">Reset</button>
+        <button id="apiKeyBtn" class="btn btn-secondary btn-small" onclick="showApiKeyModal()" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; margin-right: 4px;"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          API Key
+        </button>
       </div>
     </header>
 
@@ -988,6 +992,7 @@
   <script>
     // State
     let apiKey = localStorage.getItem('falApiKey') || '';
+    let hasServerApiKey = false;
     let sessionId = 'session_' + Date.now();
     let isRunning = false;
     let waitingForUser = false;
@@ -1045,9 +1050,37 @@
       return ICONS.user.replace('currentColor', color);
     }
 
+    // Check if server has API key configured
+    async function checkServerConfig() {
+      try {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+        hasServerApiKey = config.hasServerApiKey;
+        return hasServerApiKey;
+      } catch (e) {
+        console.error('Failed to check server config:', e);
+        return false;
+      }
+    }
+
+    // Show API key modal
+    function showApiKeyModal() {
+      document.getElementById('apiKeyInput').value = apiKey;
+      document.getElementById('apiKeyModal').classList.remove('hidden');
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', async () => {
-      if (!apiKey) {
+      // Check if server has API key
+      await checkServerConfig();
+
+      // Show API key button if server doesn't have key (user needs to provide one)
+      if (!hasServerApiKey) {
+        document.getElementById('apiKeyBtn').style.display = 'flex';
+      }
+
+      // If neither server nor local storage has API key, show modal
+      if (!apiKey && !hasServerApiKey) {
         document.getElementById('apiKeyModal').classList.remove('hidden');
       } else {
         document.getElementById('apiKeyModal').classList.add('hidden');
@@ -1060,9 +1093,16 @@
       if (key) {
         apiKey = key;
         localStorage.setItem('falApiKey', apiKey);
-        document.getElementById('apiKeyModal').classList.add('hidden');
-        loadAgents();
+      } else if (hasServerApiKey) {
+        // If no key entered but server has one, clear local storage to use server key
+        apiKey = '';
+        localStorage.removeItem('falApiKey');
+      } else {
+        // No key provided and server has none
+        return;
       }
+      document.getElementById('apiKeyModal').classList.add('hidden');
+      loadAgents();
     }
 
     async function loadAgents() {
